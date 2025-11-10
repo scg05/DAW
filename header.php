@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 // Lista de estilos disponibles (excluyendo base.css, que se carga siempre)
 $estilosDisponibles = [
@@ -70,3 +69,4 @@ $pageStyles = $pageStyles ?? [];
         </nav>
     </div>
 </header>
+

@@ -1,13 +1,13 @@
 <?php 
-    session_start();
-
+session_start();
+ require 'header.php'; 
     if(!isset($_SESSION['usuario'])){
         header("Location: index.php");
         exit;
     }
     
     $pageStyles = ["css/menuusu.css"]; 
-    require 'header.php'; 
+   
 
     date_default_timezone_set('Europe/Madrid'); // Ajusta si hace falta
     $hora = date('H');
@@ -41,3 +41,4 @@
     </main>
 
 <?php require 'footer.php'; ?>
+

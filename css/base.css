@@ -1,0 +1,162 @@
+/* FUENTES */
+.titulo-faculty {
+  font-family: "Faculty Glyphic", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.texto-montserrat {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* VARIABLES */
+:root {
+  --color-fondo: #F2F2F2;
+  --color-principal: #A18262;
+  --color-secundario: #E0CD95;
+  --fuente-base: 'Open Sans', sans-serif;
+  --fuente-titulos: 'Poppins', sans-serif;
+}
+
+/* REGLAS GENERALES */
+html, body {
+  background-color: var(--color-fondo);
+  color: var(--color-principal);
+  font-family: "Montserrat", sans-serif;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-x: hidden; /* Evita scroll horizontal */
+}
+
+/* ENCABEZADOS */
+header {
+  background-color: var(--color-principal);
+  font-family: "Montserrat", sans-serif;
+  color: #F2F2F2;
+  padding: 15px;
+  text-align: center;
+}
+header .titulo-faculty {
+  font-family: "Faculty Glyphic", sans-serif;
+  font-size: 40px;
+  letter-spacing: 2px;
+}
+
+/* NAVEGACIÓN */
+.nav-lista li {
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.nav-lista li a {
+  color: var(--color-fondo);
+  background-color: var(--color-principal);
+  border: 1px solid var(--color-fondo);
+  padding: 5px 10px;
+  text-decoration: none;
+}
+
+.nav-toggle {
+  background: none;
+  border: 1px solid var(--color-fondo);
+  color: var(--color-fondo);
+  font-size: 24px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* ENLACES */
+a {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* CONTENEDOR PRINCIPAL */
+main {
+  margin: 20px;
+  padding: 20px;
+  background-color: var(--color-fondo);
+}
+
+/* MENSAJE DE ERROR */
+.error {
+  color: red;
+  font-size: 0.9em;
+}
+
+/* PIE DE PÁGINA */
+footer {
+  background-color: var(--color-principal);
+  color: #F2F2F2;
+  padding: 10px;
+  text-align: center;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* CLASES BÁSICAS */
+.conBorde {
+  border: 2px solid var(--color-principal);
+  background-color: var(--color-secundario);
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="search"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0 15px 0;
+  border: 1px solid var(--color-principal);
+  border-radius: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1em;
+  color: var(--color-principal);
+  background-color: var(--color-fondo);
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: var(--color-principal);
+  opacity: 1;
+}
+
+button {
+  background-color: var(--color-principal);
+  color: #F2F2F2;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: var(--color-secundario);
+  color: var(--color-principal);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  main {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  .nav-lista li {
+    display: block;
+    margin: 5px 0;
+  }
+
+  header .titulo-faculty {
+    font-size: 28px;
+  }
+}

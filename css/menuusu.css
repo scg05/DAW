@@ -1,0 +1,73 @@
+
+/* CONTENEDOR PRINCIPAL */
+main.container {
+  background-color: var(--color-secundario);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 40px;
+  max-width: 800px;
+  margin: 40px auto;
+  text-align: center;
+  overflow-x: hidden; /* evita scroll horizontal en móvil */
+}
+
+/* TÍTULO Y TEXTO */
+main h1 {
+  font-size: 2em;
+  color: var(--color-principal);
+  margin-bottom: 15px;
+}
+
+main p {
+  color: var(--color-principal);
+  margin-bottom: 25px;
+  font-size: 1.1em;
+  line-height: 1.5;
+}
+
+/* LISTA DE OPCIONES */
+main ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+main ul li {
+  margin: 15px 0;
+}
+
+/* ENLACES DEL MENÚ */
+main ul li a {
+  display: block;
+  padding: 12px 20px;
+  background-color: var(--color-principal);
+  color: var(--color-fondo);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s, transform 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+main ul li a:hover {
+  background-color: var(--color-fondo);
+  color: var(--color-principal);
+  transform: translateY(-2px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  main.container {
+    padding: 25px;
+    margin: 20px;
+  }
+
+  main h1 {
+    font-size: 1.6em;
+  }
+
+  main ul li a {
+    padding: 10px;
+    font-size: 0.95em;
+  }
+}

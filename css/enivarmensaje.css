@@ -1,0 +1,94 @@
+
+/* CONTENEDOR PRINCIPAL */
+main.container {
+  background-color: var(--color-secundario);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 40px;
+  max-width: 700px;
+  margin: 40px auto;
+  text-align: center;
+  overflow-x: hidden; /* evita scroll horizontal */
+}
+
+/* TÍTULO */
+main h1 {
+  color: var(--color-principal);
+  font-size: 2em;
+  margin-bottom: 25px;
+}
+
+/* FORMULARIO */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto; /* centra el formulario */
+}
+
+/* LABELS */
+form label {
+  font-weight: 600;
+  color: var(--color-principal);
+  margin-bottom: 5px;
+}
+
+/* SELECT Y TEXTAREA */
+form select,
+form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--color-principal);
+  border-radius: 8px;
+  background-color: var(--color-fondo);
+  font-size: 1em;
+  color: var(--color-principal);
+  transition: border-color 0.3s;
+  box-sizing: border-box; /* evita que se salga del contenedor */
+}
+
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border-color: var(--color-fondo);
+}
+
+/* BOTÓN DE ENVÍO */
+form button {
+  align-self: center;
+  background-color: var(--color-principal);
+  color: var(--color-fondo);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+form button:hover {
+  background-color: var(--color-fondo);
+  color: var(--color-principal);
+  transform: translateY(-2px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  main.container {
+    padding: 25px;
+    margin: 20px;
+  }
+
+  form button {
+    width: 100%;
+  }
+
+  form select,
+  form textarea {
+    font-size: 0.95em; /* mejora la legibilidad en pantallas pequeñas */
+  }
+}

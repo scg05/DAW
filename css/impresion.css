@@ -1,0 +1,116 @@
+/* impresion.css — optimizado para index.html */
+@media print {
+  /* Configuración de la página */
+  @page {
+    size: A4 portrait;
+    margin: 2cm;
+  }
+
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 12pt !important;
+    font-family: "Times New Roman", Times, serif !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* === HEADER === */
+  header {
+    text-align: center;
+    background: none !important;
+    color: #000 !important;
+    border: none !important;
+    margin-bottom: 0.5cm;
+  }
+
+  header .titulo-faculty {
+    display: block;
+    font-size: 20pt;
+    font-weight: bold;
+    text-decoration: none;
+    color: #000 !important;
+    margin-bottom: 0.3cm;
+  }
+
+  /* Ocultar navegación e interacción */
+  nav, .nav-toggle, .nav-lista, button, input, select, textarea, form {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* === CONTENIDO PRINCIPAL === */
+  main {
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  main section {
+    background: none !important;
+    color: #000 !important;
+    border: 0.3pt solid #000 !important;
+    padding: 0.5cm;
+    margin-bottom: 0.7cm;
+    page-break-inside: avoid;
+  }
+
+  main h2, main h3 {
+    font-family: "Times New Roman", Times, serif;
+    font-weight: bold;
+    color: #000 !important;
+  }
+
+  /* === ANUNCIOS === */
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  ul li {
+    margin-bottom: 0.5cm;
+    page-break-inside: avoid;
+  }
+
+  a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+  }
+
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+    border: 1pt solid #000;
+    margin-bottom: 0.2cm;
+    page-break-inside: avoid;
+  }
+
+  /* === DECORACIÓN Y LEGIBILIDAD === */
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* === PIE DE IMPRESIÓN AUTOMÁTICO === */
+  body::after {
+    display: block;
+    content: 
+      "URL de la página: https://inmueblesdaw.42web.io/index.html" attr(data-url) "\A© 2025 PI - PISOS & INMUEBLES. Todos los derechos reservados. Autores: Sara Cuenca García, Iván Jesús Bervel Villalba";
+    white-space: pre;
+    text-align: center;
+    font-size: 10pt;
+    margin-top: 1cm;
+    border-top: 1pt solid #000;
+    padding-top: 0.5cm;
+  }
+
+  /* Oculta multimedia o scripts */
+  script, iframe, video, audio {
+    display: none !important;
+  }
+}

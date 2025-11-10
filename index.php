@@ -1,6 +1,5 @@
 <?php
-session_start(); //NO FUNCUIONA, SE INICIA 2 VECES
-
+    session_start();
     //CERAR SESION
     if(isset($_GET['logout'])){
         session_unset();
@@ -15,9 +14,8 @@ session_start(); //NO FUNCUIONA, SE INICIA 2 VECES
     $usuariorec = '';
 
     //COMPROBAR SI EXISTEN COOKIES DE RECORDAR USUARIO
-    if(isset($_COOKIE['recordar_usuario']) && isset($_COOKIE['recordar_password'])){
-        $usuariorec=$_COOKIE['recordar_usuario'];
-        $passwordrec=$_COOKIE['recordar_password'];
+    if(isset($_COOKIE['usuario'])){
+        $usuariorec=$_SESSION['usuario'];
         
         //MENSAJE BIENVENIDA ULTIMA VISITA
         if(isset($_COOKIE['ultima_visita'])){
@@ -27,17 +25,32 @@ session_start(); //NO FUNCUIONA, SE INICIA 2 VECES
             echo '<p class="mensaje">Bienvenido de nuevo, <strong>' . htmlspecialchars($usuariorec) . '</strong>.</p>';
         }
 
-        $visitaact=date("c");
         setcookie('ultima_visita',$visitaact,(time()+(90*24*60*60))); //Caduca en 90 dias
 
         echo '<p><a href="index.php?logout=1">Cerrar sesion</a></p>';
-    } else{
+
+    } elseif(isset($_COOKIE['recordar_usuario']) && isset($_COOKIE['recordar_password'])){
+
+        $usuariorec = $_COOKIE['recordar_usuario'];
+        $passwordrec = $_COOKIE['recordar_password'];
+        $_SESSION['usuario']=$usuariorec;
+
         if (isset($_COOKIE['ultima_visita'])) {
-            $ultimavisita = $_COOKIE['ultima_visita'];
+            echo '<p class="mensaje">Bienvenido de nuevo, <strong>' . htmlspecialchars($usuariorec) . '</strong> ';
+            echo 'tu última visita fue el ' . date("d/m/Y H:i", strtotime($_COOKIE['ultima_visita'])) . '.</p>';
+        } else {
+            echo '<p class="mensaje">Bienvenido de nuevo, <strong>' . htmlspecialchars($usuariorec) . '</strong>.</p>';
         }
         $visitaact = date("c");
         setcookie('ultima_visita', $visitaact, (time() + (90*24*60*60))); //Caduca en 90 dias
-?>
+        echo '<p><a href="index.php?logout=1">Cerrar sesión</a></p>';
+    
+    }else {
+        
+        // --- USUARIO SIN SESIÓN NI COOKIES ---
+        $visitaact = date("c");
+        setcookie('ultima_visita', $visitaact, time() + (90 * 24 * 60 * 60), "/");
+        ?>
 
         <!-- Contenido principal -->
         <main class="container2">

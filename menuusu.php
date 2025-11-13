@@ -41,4 +41,3 @@ session_start();
     </main>
 
 <?php require 'footer.php'; ?>
-

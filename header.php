@@ -1,5 +1,4 @@
 <?php
-
 // Lista de estilos disponibles (excluyendo base.css, que se carga siempre)
 $estilosDisponibles = [
     'oscuro.css' => 'Oscuro',
@@ -69,4 +68,3 @@ $pageStyles = $pageStyles ?? [];
         </nav>
     </div>
 </header>
-

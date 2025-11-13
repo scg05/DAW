@@ -1,4 +1,7 @@
-<?php $pageStyles = ["css/registro.css"]; require 'header.php'; ?>
+<?php $pageStyles = ["css/registro.css"]; 
+    require 'header.php';
+    require 'conexion.php';
+?>
 
         <main>
         <h2>Formulario de Registro</h2>
@@ -48,16 +51,21 @@
             <label for="pais">País de residencia:</label><br>
             <select id="pais" name="pais">
             <option value="">Seleccione un país</option>
-            <option value="es">España</option>
-            <option value="mx">México</option>
-            <option value="ar">Argentina</option>
-            <option value="cl">Chile</option>
-            <option value="co">Colombia</option>
-            <option value="us">Estados Unidos</option>
-            <option value="fr">Francia</option>
-            <option value="de">Alemania</option>
-            <option value="it">Italia</option>
-            <option value="uk">Reino Unido</option>
+            <?php
+            $sql='SELECT IdPais, Nombre FROM Paises ORDER BY Nombre ASC';
+            $result = $conn->query($sql);
+
+            if($result && $result->num_rows>0){
+                while($row=$result->fetch_assoc()){
+                    $id=htmlspecialchars($row['IdPais']);
+                    $nombre=htmlspecialchars($row['Nombre']);
+                    echo "<option value='$id'>$nombre</option>";
+                }
+            } else{
+                echo "<option value=''>No hay paises disponibles</option>";
+            }
+            $conn->close();
+            ?>
             <!-- Se pueden añadir más países -->
             </select><br><br>
 

@@ -138,29 +138,6 @@
             </form>
             </section>
 
-            <!-- ÚLTIMOS ANUNCIOS VISITADOS -->
-            <section class="fondoSuave">
-            <h2 class="titulo-faculty">Últimos anuncios visitados</h2>
-            <ul>
-            <?php
-            if (isset($_COOKIE['ultimos_anuncios'])) {
-                $ultimos = json_decode($_COOKIE['ultimos_anuncios'], true);
-
-                foreach ($ultimos as $a) {
-                    echo "<li>
-                            <a href='ver_anuncio.php?id={$a['id']}'>
-                                <img src='{$a['img']}' alt='Foto {$a['titulo']}' width='150'>
-                                <h3>{$a['titulo']}</h3>
-                                <p>Ciudad: {$a['ciudad']} — País: {$a['pais']} — Precio: {$a['precio']}</p>
-                            </a>
-                        </li>";
-                }
-            } else {
-                echo "<p>Aún no has visitado ningún anuncio.</p>";
-            }
-            ?>
-            </ul>
-            </section>
             <!-- ÚLTIMOS ANUNCIOS PUBLICADOS -->
             <?php
             require 'conexion.php';

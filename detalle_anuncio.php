@@ -44,7 +44,7 @@ $anuncio['NomUsuario'] = $anuncio['NomUsuario'] ?? "Anónimo";
 ?>
 
 <main class="container">
-  <h1 class="titulo-faculty">Ver anuncio</h1>
+  <h1 class="titulo-faculty">Detalle del anuncio</h1>
   <article class="detalle-anuncio">
     <h2><?= htmlspecialchars($anuncio["Titulo"]) ?></h2>
 
@@ -66,13 +66,17 @@ $anuncio['NomUsuario'] = $anuncio['NomUsuario'] ?? "Anónimo";
       <p><strong>Baños:</strong> <?= htmlspecialchars($anuncio["NBanyos"]) ?></p>
       <p><strong>Planta:</strong> <?= htmlspecialchars($anuncio["Planta"]) ?></p>
 
+      <!-- Anunciante -->
+      <p><strong>Usuario propietario:</strong> <a href="perfil_usuario.php?id=<?= $anuncio['Usuario'] ?>"><?= htmlspecialchars($anuncio["NomUsuario"]) ?></a></p>
+    </section>
+
     <!-- Descripción -->
     <section class="descripcion">
         <h3>Descripción del anuncio</h3>
         <p><?= nl2br(htmlspecialchars($anuncio["Texto"])) ?></p>
     </section>
 
-    <p><a href="verfotos_private.php?id=<?= $anuncio['IdAnuncio'] ?>">Ver todas las fotos</a></p>
+    <p><a href="verfotos_public.php?id=<?= $anuncio['IdAnuncio'] ?>">Ver todas las fotos</a></p>
 
 
     <!-- Contacto -->

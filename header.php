@@ -63,7 +63,6 @@ $pageStyles = $pageStyles ?? [];
                 <li><a href="registro.php"><i class="icon-user-plus"></i>Registro</a></li>
                 <li><a href="busqueda.php"><i class="icon-search"></i>Búsqueda</a></li>
                 <li><a href="mensaje.php"><i class="icon-mail-1"></i>Enviar mensaje</a></li>
-                <li><a href="menuusu.php"><i class="icon-user"></i>Menú usuario</a></li>
             </ul>
         </nav>
     </div>

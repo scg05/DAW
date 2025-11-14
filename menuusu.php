@@ -31,7 +31,6 @@ session_start();
         <p><?php echo "Bienvenido a tu área privada. Selecciona una de las opciones disponibles:"; ?></p>
         <ul>
             <li><a href="modificar_datos.html">Modificar mis datos</a></li>
-            <li><a href="baja.html">Darme de baja</a></li>
             <li><a href="mis_anuncios.php">Visualizar mis anuncios</a></li>
             <li><a href="crear_anuncio.php">Crear un anuncio nuevo</a></li>
             <li><a href="mismensajes.html">Mis mensajes</a></li>

@@ -1,36 +1,54 @@
 <?php
-    session_start();
+session_start();
+require "conexion.php";
 
-    $usuario=trim($_POST['usuario']);
-    $contrasena=trim($_POST['password']);
+$usuario = trim($_POST['usuario']);
+$contrasena = trim($_POST['password']);
 
-    if($usuario==''||$contrasena==''){
-        header("Location: index.php?error=campos_vacios");
-        exit;
+if ($usuario == '' || $contrasena == '') {
+    header("Location: index.php?error=campos_vacios");
+    exit;
+}
+
+$permitido = false;
+$idUsuario = null;
+
+$sql = "SELECT IdUsuario, Clave FROM Usuarios WHERE NomUsuario = ?";
+$stmt = $conn->prepare($sql);
+
+if (!$stmt) {
+    die("Error en la consulta: " . $conn->error);
+}
+
+$stmt->bind_param("s", $usuario);
+$stmt->execute();
+
+$stmt->bind_result($dbId, $dbClave);
+
+if ($stmt->fetch()) {
+    if ($dbClave === $contrasena) {
+        $permitido = true;
+        $idUsuario = $dbId;
     }
-    $permitido=false;
-    $lineas=file("usuarios.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+}
 
-    foreach($lineas as $linea){
-        list($nombre, $clave) = explode(":", $linea);
-        if ($usuario === $nombre && $contrasena === $clave) {
-            $permitido = true;
-            break;
-        }
+$stmt->close();
+$conn->close();
+
+if ($permitido) {
+    $_SESSION['usuario'] = $usuario;
+    $_SESSION['id_usuario'] = $idUsuario;
+
+    if (isset($_POST['recordarme']) && $_POST['recordarme'] == 'si') {
+        setcookie('recordar_usuario', $usuario, time() + (90 * 24 * 60 * 60));
+        setcookie('recordar_password', $contrasena, time() + (90 * 24 * 60 * 60));
+        setcookie('ultima_visita', date("c"), time() + (90 * 24 * 60 * 60));
     }
 
-    if($permitido){
-        $_SESSION['usuario']=$usuario;
-        //marco recuerdame
-        if(isset($_POST['recordarme'])&& $_POST['recordarme']=='si'){
-            setcookie('recordar_usuario', $usuario, time() + (90*24*60*60));
-            setcookie('recordar_password', $contrasena, time() + (90*24*60*60)); //NO SE PUEDE MANDAR EN ABIERTO tiene que haber un hash
-             setcookie('ultima_visita', date("c"), time() + (90*24*60*60)); //FALTA COOKIE ESTILO
-        }
-        header("Location: menuusu.php");
-        exit;
-    } else {
-        header("Location: index.php?error=acceso_denegado");
-        exit;
-    }
+    header("Location: menuusu.php");
+    exit;
+} else {
+    header("Location: index.php?error=acceso_denegado");
+    exit;
+}
 ?>

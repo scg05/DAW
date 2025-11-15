@@ -1,46 +1,91 @@
 <?php
-    $anuncios = [
-        [
-            "foto" => "../img/casa1.jpg",
-            "titulo" => "Apartamento en el centro",
-            "ciudad" => "Madrid",
-            "pais" => "España",
-            "precio" => "250.000 €"
-        ],
-        [
-            "foto" => "../img/casa2.jpg",
-            "titulo" => "Chalet con jardín",
-            "ciudad" => "Valencia",
-            "pais" => "España",
-            "precio" => "420.000 €"
-        ],
-        [
-            "foto" => "../img/casa3.jpg",
-            "titulo" => "Estudio moderno",
-            "ciudad" => "Barcelona",
-            "pais" => "España",
-            "precio" => "332.000 €"
-        ]
-    ];
+require 'header.php';
+require 'conexion.php';
+
+// Comprobar sesión
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php?error=acceso_denegado");
+    exit;
+}
+
+// Obtener nombre de usuario desde sesión
+$nombreUsuario = $_SESSION['usuario'];
+
+// Recuperar IdUsuario desde la base de datos
+$stmt = $conn->prepare("SELECT IdUsuario FROM Usuarios WHERE NomUsuario = ?");
+$stmt->bind_param("s", $nombreUsuario);
+$stmt->execute();
+$stmt->bind_result($idUsuario);
+$stmt->fetch();
+$stmt->close();
+
+// Comprobar que se encontró el usuario
+if (!$idUsuario) {
+    echo "<p class='error'>Usuario no encontrado.</p>";
+    require 'footer.php';
+    exit;
+}
+
+// Consulta de anuncios del usuario
+$sql = "
+    SELECT 
+        A.IdAnuncio,
+        A.Titulo,
+        A.Precio,
+        A.Ciudad,
+        P.Nombre AS Pais,
+        A.FPrincipal AS FotoPrincipal
+    FROM Anuncios A
+    LEFT JOIN Paises P ON P.IdPais = A.Pais
+    WHERE A.Usuario = ?
+    ORDER BY A.FRegistro DESC
+";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $idUsuario);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$anuncios = [];
+if ($result && $result->num_rows > 0) {
+    while ($fila = $result->fetch_assoc()) {
+        $anuncios[] = $fila;
+    }
+}
+
+$conn->close();
 ?>
 
-<?php $pageStyles = ["css/estilos_mis_anuncios.css"]; require 'header.php'; ?>
+<main class="container">
 
-    <h1>Mis Anuncios</h1>
+<h1>Mis Anuncios</h1>
 
-    <a href="crear_anuncio.php" class="boton-crear">Crear nuevo anuncio</a>
+<a href="crear_anuncio.php" class="boton-crear">Crear nuevo anuncio</a>
 
-    <div class="anuncios">
-        <?php foreach ($anuncios as $an):?>
+<div class="anuncios">
+
+    <?php if (empty($anuncios)): ?>
+        <p>No has creado ningún anuncio todavía.</p>
+    <?php else: ?>
+        <?php foreach ($anuncios as $an): ?>
             <div class="anuncio">
-                <img src="<?= $an['foto'] ?>" alt="<?= $an['titulo'] ?>" width="150">
-                <h3><?= $an['titulo'] ?></h3>
-                <p><?= $an['ciudad'] ?>, <?= $an['pais'] ?></p>
-                <p><strong><?= $an['precio'] ?></strong></p>
-                <a href="ver_anuncio.php?titulo=<?= urlencode($an['titulo']) ?>">Ver anuncio</a>
-                <a href="anadir_foto.php?titulo=<?= urlencode($an['titulo']) ?>">Añadir foto</a>
+
+                <img src="<?= htmlspecialchars($an['FotoPrincipal']) ?>" 
+                     alt="<?= htmlspecialchars($an['Titulo']) ?>" width="150">
+
+                <h3><?= htmlspecialchars($an['Titulo']) ?></h3>
+                <p><?= htmlspecialchars($an['Ciudad']) ?>, <?= htmlspecialchars($an['Pais']) ?></p>
+                <p><strong><?= number_format($an['Precio'], 0, ",", ".") ?> €</strong></p>
+
+                <a href="ver_anuncio.php?id=<?= $an['IdAnuncio'] ?>">Ver anuncio</a>
+                <a href="anadir_foto.php?id=<?= $an['IdAnuncio'] ?>">Añadir foto</a>
+
             </div>
         <?php endforeach; ?>
-    </div>
-    
+    <?php endif; ?>
+
+</div>
+
+</main>
+
 <?php require 'footer.php'; ?>

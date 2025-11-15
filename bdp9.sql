@@ -171,9 +171,9 @@ INSERT INTO TiposViviendas (NomTVivienda) VALUES
 
 -- INSERTS EN ESTILOS
 INSERT INTO Estilos(Nombre, Descripcion, Fichero) VALUES
-('Moderno', 'Estilo moderno y minimalista', 'moderno.css'),
-('Clásico', 'Estilo clásico y elegante', 'clasico.css'),
-('Rústico', 'Estilo rústico y cálido', 'rustico.css');
+('Oscuro', 'Estilo más oscuro', 'css/oscuro.css'),
+('Clásico', 'Estilo clásico y elegante', 'css/clasico.css'),
+('Rústico', 'Estilo rústico y cálido', 'css/rustico.css');
 
 -- INSERTS EN TiposMensajes
 INSERT INTO TiposMensajes(NomTMensaje) VALUES

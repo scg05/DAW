@@ -73,7 +73,7 @@
             <ul class="ultimos-anuncios">
                 <?php while ($a = $resAn->fetch_assoc()): ?>
                     <li>
-                        <a href="ver_anuncio.php?id=<?= (int)$a['IdAnuncio'] ?>">
+                        <a href="detalle_anuncio.php?id=<?= (int)$a['IdAnuncio'] ?>">
                             <?php if (!empty($a['FPrincipal'])): ?>
                                 <img src="<?= htmlspecialchars($a['FPrincipal']) ?>" alt="Foto anuncio" width="120">
                             <?php endif; ?>
@@ -84,7 +84,7 @@
                                 <p><strong>Publicado:</strong> <?= (!empty($a['FRegistro'])) ? date("d/m/Y", strtotime($a['FRegistro'])) : "—" ?></p>
                                 <p><strong>Precio:</strong> <?= is_null($a['Precio']) ? '—' : number_format($a['Precio'], 2, ',', '.') . ' €' ?></p>
                                  <!-- Enlace a las fotos privadas de este anuncio -->
-    <p><a href="verfotos_private.php?id=<?= (int)$a['IdAnuncio'] ?>">Ver fotos de este anuncio</a></p>
+                                <p><a href="verfotos_public.php?id=<?= (int)$a['IdAnuncio'] ?>">Ver fotos de este anuncio</a></p>
                             </div>
                         </a>
                     </li>

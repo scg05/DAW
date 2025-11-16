@@ -90,7 +90,7 @@ if ($stmt) {
             <?php while ($a = $result->fetch_assoc()): ?>
                 <div class="anuncio">
                     <img src="<?= htmlspecialchars($a['FPrincipal']) ?>" width="200" alt="Foto vivienda">
-                    <h3><a href="ver_anuncio.php?id=<?= $a['IdAnuncio'] ?>"><?= htmlspecialchars($a['Titulo']) ?></a></h3>
+                    <h3><a href="detalle_anuncio.php?id=<?= $a['IdAnuncio'] ?>"><?= htmlspecialchars($a['Titulo']) ?></a></h3>
                     <p><strong>Fecha:</strong> <?= date("d/m/Y", strtotime($a['FRegistro'])) ?></p>
                     <p><strong>Ciudad:</strong> <?= htmlspecialchars($a['Ciudad']) ?></p>
                     <p><strong>País:</strong> <?= htmlspecialchars($a['Pais']) ?></p>

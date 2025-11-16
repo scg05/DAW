@@ -165,7 +165,7 @@
                     $precio = number_format($row['Precio'], 2, ',', '.');
 
                     echo "<li>
-                            <a href='ver_anuncio.php?id={$row['IdAnuncio']}'>
+                            <a href='detalle_anuncio.php?id={$row['IdAnuncio']}'>
                                 <img src='{$foto}' alt='Foto de {$titulo}' width='150'>
                                 <h3>{$titulo}</h3>
                                 <p>Publicado el {$fecha}</p>

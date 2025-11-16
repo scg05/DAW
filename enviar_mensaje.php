@@ -35,39 +35,6 @@
         <button type="submit">Enviar</button>
     </form>
 
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        
-        $tipo = $_POST["tipo"] ?? "";
-        $mensaje = trim($_POST["mensaje"] ?? "");
-
-        $errores = [];
-
-        if ($tipo === "" || !ctype_digit((string)$tipo)) {
-            $errores[] = "Debes seleccionar un tipo de mensaje válido.";
-        }
-
-        if ($mensaje === "") {
-            $errores[] = "El texto del mensaje no puede estar vacío.";
-        }
-
-        if (!empty($errores)) {
-            echo "<div class='error'>";
-            echo "<h3>❌ Se encontraron errores:</h3><ul>";
-            foreach ($errores as $e) {
-                echo "<li>" . htmlspecialchars($e) . "</li>";
-            }
-            echo "</ul></div>";
-        } else {
-            echo "<div class='exito'>";
-            echo "<h3> Mensaje enviado correctamente</h3>";
-            echo "<p><strong>Tipo:</strong> $tipo</p>";
-            echo "<p><strong>Mensaje:</strong> $mensaje</p>";
-            echo "</div>";
-        }
-    }
-    $conn->close();
-    ?>
 </main>
 
 <?php require 'footer.php'; ?>

@@ -81,7 +81,7 @@ $anuncio['NomUsuario'] = $anuncio['NomUsuario'] ?? "Anónimo";
 
     <!-- Contacto -->
     <section class="usuario">
-      <p><a href="mensaje.php?anuncio=<?= $id ?>">Contactar con el anunciante</a></p>
+      <p><a href="enviar_mensaje.php?anuncio=<?= $id ?>">Contactar con el anunciante</a></p>
     </section>
 
     <!-- Añadir foto -->

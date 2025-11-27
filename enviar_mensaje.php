@@ -1,17 +1,40 @@
-<?php $pageStyles = ["css/enviarmensaje.css"]; require 'header.php'; ?>
+<?php $pageStyles = ["css/enviarmensaje.css"];
+    require 'header.php'; 
+    require 'conexion.php';
+?>
 
-    <main class="container">
-    <h1>Mensaje enviado correctamente</h1>
+<main class="container">
+    <h1 class="titulo-faculty">Enviar mensaje al anunciante</h1>
 
-    <p>Su mensaje ha sido almacenado en nuestra base de datos y ha sido enviado al anunciante.</p>
+    <?php
+    
+    $tipos=[];
+    $consulta="SELECT IdTMensaje, NomTMensaje FROM TiposMensajes ORDER BY NomTMensaje ASC";
+    $resultado=$conn->query($consulta);
 
-    <h2>Datos del mensaje</h2>
-    <ul>
-      <li><strong>Tipo de mensaje:</strong> [Más información / Solicitar una cita / Comunicar una oferta]</li>
-      <li><strong>Contenido del mensaje:</strong> [Texto escrito por el usuario]</li>
-    </ul>
+    if($resultado && $resultado->num_rows>0){
+        while($fila=$resultado->fetch_assoc()){
+            $tipos[]=$fila;
+        }
+    } else{
+        echo "<p class='error'>No se pudieron cargar los tipos de mensaje.</p>";
+    }
+    ?>
 
-    <p>Gracias por contactar con el anunciante. Este responderá a su solicitud lo antes posible.</p>
-    </main>
+    <form action="mensaje.php" method="post">
+        <label for="tipo">Tipo de mensaje:</label>
+        <select id="tipo" name="tipo" required>
+            <?php foreach ($tipos as $t): ?>
+                <option value="<?= htmlspecialchars($t['IdTMensaje']) ?>"><?= htmlspecialchars($t['NomTMensaje']) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <label for="mensaje">Mensaje:</label>
+        <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+</main>
 
 <?php require 'footer.php'; ?>

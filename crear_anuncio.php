@@ -1,53 +1,49 @@
 <?php
-    $mensaje_error = "";
+require 'header.php';
+require 'conexion.php';
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $titulo = trim($_POST['titulo']);
-        $ciudad = trim($_POST['ciudad']);
-        $pais = trim($_POST['pais']);
-        $precio = trim($_POST['precio']);
+// Cargar tipos de anuncio
+$tiposAnuncio = [];
+$sqlTA = "SELECT IdTAnuncio, NomTAnuncio FROM TiposAnuncios ORDER BY NomTAnuncio";
+$resTA = $conn->query($sqlTA);
+while ($fila = $resTA->fetch_assoc()) {
+    $tiposAnuncio[] = $fila;
+}
 
-        if ($titulo == "" || $ciudad == "" || $pais == "" || $precio == "") {
-            $mensaje_error = "Debes completar todos los campos.";
-        } else {
-            // Aquí iría el "guardado" del anuncio
-            header("Location: mis_anuncios.php");
-            exit;
-        }
-    }
+// Cargar tipos de vivienda
+$tiposVivienda = [];
+$sqlTV = "SELECT IdTVivienda, NomTVivienda FROM TiposViviendas ORDER BY NomTVivienda";
+$resTV = $conn->query($sqlTV);
+while ($fila = $resTV->fetch_assoc()) {
+    $tiposVivienda[] = $fila;
+}
+
+// Cargar países
+$paises = [];
+$sqlP = "SELECT IdPais, Nombre FROM Paises ORDER BY Nombre";
+$resP = $conn->query($sqlP);
+while ($fila = $resP->fetch_assoc()) {
+    $paises[] = $fila;
+}
+
+$conn->close();
+
+// Variables vacías para el formulario
+$titulo = "";
+$ciudad = "";
+$pais = "";
+$precio = "";
+$tipoA = "";
+$tipoV = "";
+$descripcion = "";
+
+$modo = 'crear';
+$mensaje_error = "";
+$accion = "respuesta_crear_anuncio.php";
 ?>
 
-<?php require 'header.php'; ?>
+<main class="container">
+    <?php require 'formulario_anuncio.php'; ?>
+</main>
 
-    <h1>Crear nuevo anuncio</h1>
-     <?php if ($mensaje_error != "") {
-        echo "<p style='color:red'>$mensaje_error</p>";
-    } ?>
-
-    <form action="mis_anuncios.php" method="post" novalidate>
-        <label>Título:</label>
-        <input type="text" name="titulo"><br>
-
-        <label>Ciudad:</label>
-        <input type="text" name="ciudad"><br>
-
-        <label>País:</label>
-        <input type="text" name="pais"><br>
-
-        <label>Precio:</label>
-        <input type="number" name="precio"><br>
-
-        <label>Tipo de vivienda:</label>
-        <select name="tipo">
-            <option value="Piso">Piso</option>
-            <option value="Casa">Casa</option>
-            <option value="Chalet">Chalet</option>
-        </select><br>
-
-        <label>Descripción:</label><br>
-        <textarea name="descripcion"></textarea><br>
-
-        <input type="submit" value="Crear anuncio">
-    </form>
-    
 <?php require 'footer.php'; ?>

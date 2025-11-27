@@ -1,23 +1,41 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
 // Lista de estilos disponibles (excluyendo base.css, que se carga siempre)
 $estilosDisponibles = [
+    'ninguno' => 'Sin estilo adicional',
     'oscuro.css' => 'Oscuro',
     'contraste.css' => 'Contraste',
     'grande.css' => 'Grande',
     'impresion.css' => 'Impresión'
 ];
 
+
 // Estilo por defecto
 $estiloActivo = null;
 
-// Comprobar cookie guardada
-if (isset($_COOKIE['estilo_usuario']) && array_key_exists($_COOKIE['estilo_usuario'], $estilosDisponibles)) {
+if (isset($_COOKIE['estilo_usuario']) && 
+    $_COOKIE['estilo_usuario'] !== 'ninguno' &&
+    array_key_exists($_COOKIE['estilo_usuario'], $estilosDisponibles)) {
+
     $estiloActivo = $_COOKIE['estilo_usuario'];
 }
 
 if (isset($_GET['estilo']) && array_key_exists($_GET['estilo'], $estilosDisponibles)) {
+
     $estiloActivo = $_GET['estilo'];
-    setcookie('estilo_usuario', $estiloActivo, time() + 7 * 24 * 60 * 60, "/"); // 7 días
+
+    if ($estiloActivo === 'ninguno') {
+        // Borrar cookie => volver al estilo normal
+        setcookie('estilo_usuario', '', time() - 3600, "/");
+        $estiloActivo = null; // no cargar ningún CSS extra
+    } else {
+        // Guardar nueva preferencia
+        setcookie('estilo_usuario', $estiloActivo, time() + 7 * 24 * 60 * 60, "/");
+    }
 }
 
 $pageStyles = $pageStyles ?? [];
@@ -62,7 +80,9 @@ $pageStyles = $pageStyles ?? [];
                 <li><a href="index.php"><i class="icon-home"></i>Página principal</a></li>
                 <li><a href="registro.php"><i class="icon-user-plus"></i>Registro</a></li>
                 <li><a href="busqueda.php"><i class="icon-search"></i>Búsqueda</a></li>
-                <li><a href="mensaje.php"><i class="icon-mail-1"></i>Enviar mensaje</a></li>
+                <li><a href="menuusu.php"><i class="icon-mail-1"></i>Menu usuario</a></li>
+                <li><a href="configurar.php"><i class="icon-mail-1"></i>Configuracion</a></li>
+
             </ul>
         </nav>
     </div>

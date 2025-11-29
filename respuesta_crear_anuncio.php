@@ -1,23 +1,26 @@
 <?php
+// NOTA: Se ha eliminado el session_start() redundante, ya que ya se inicia en header.php.
+
 require 'header.php';
 require 'conexion.php';
 require 'filtro_anuncio.php';
 
-session_start();
-$usuario = $_SESSION['idUsuario'] ?? 1; // O lo que uses para login
+// Es crucial obtener el ID del usuario. Si no está logueado, se asume 1 (temporalmente).
+// Es mejor forzar el login si la sesión no existe, pero mantendremos tu lógica existente de respaldo.
+$usuario = $_SESSION['id_usuario'] ?? 1; // Usamos 'id_usuario' que es lo que establece control_acceso.php
 
 // 1. Validar todo con filtro_anuncio.php
 list($datos, $errores) = filtrarDatosAnuncio();
 
 $titulo      = $datos['titulo'];
 $ciudad      = $datos['ciudad'];
-$pais        = $datos['pais'];
-$precio      = $datos['precio'];
-$tipoA       = $datos['tipo_anuncio'];
-$tipoV       = $datos['tipo_vivienda'];
+$pais        = $datos['pais'];      // Debe ser INT
+$precio      = $datos['precio'];    // Debe ser DOUBLE/FLOAT
+$tipoA       = $datos['tipo_anuncio']; // Debe ser INT
+$tipoV       = $datos['tipo_vivienda'];// Debe ser INT
 $descripcion = $datos['descripcion'];
 
-// 2. Si hay errores → volver a mostrar el formulario igual que en modificar
+// 2. Si hay errores → volver a mostrar el formulario
 if (!empty($errores)) {
 
     $mensaje_error = implode("<br>", $errores);
@@ -54,18 +57,47 @@ $sql = "INSERT INTO Anuncios
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'img/sin_foto.jpg')";
 
 $stmt = $conn->prepare($sql);
+
+// CONVERTIMOS LAS VARIABLES A SUS TIPOS ESCALARES REQUERIDOS PARA bind_param
+$paisInt  = (int)$pais;
+$tipoAInt = (int)$tipoA;
+$tipoVInt = (int)$tipoV;
+$usuarioInt = (int)$usuario;
+
+// CORRECCIÓN CRÍTICA: La cadena de tipos debe ser "ssidsiii"
+// s: Titulo, s: Ciudad, i: Pais, d: Precio, s: Texto, i: TAnuncio, i: TVivienda, i: Usuario
 $stmt->bind_param(
-    "ssidssii",
-    $titulo, $ciudad, $pais, $precio, $descripcion, $tipoA, $tipoV, $usuario
+    "ssidsiii",
+    $titulo, $ciudad, $paisInt, $precio, $descripcion, $tipoAInt, $tipoVInt, $usuarioInt
 );
 
-$stmt->execute();
+// CORRECCIÓN CRÍTICA: Comprobamos el resultado de la ejecución
+if ($stmt->execute()) {
+    
+    $idNuevo = $conn->insert_id;
+    
+    // ÉXITO
+    ?>
+    <main class="container">
+        <h1>Anuncio creado correctamente</h1>
+        <p><a href="anadir_foto.php?id=<?= $idNuevo ?>">Añadir foto al anuncio</a></p>
+    </main>
+    <?php
+} else {
+    // FALLO DE INSERCIÓN
+    ?>
+    <main class="container">
+        <h1>Error al crear anuncio</h1>
+        <p>Ha ocurrido un error al intentar guardar el anuncio en la base de datos.</p>
+        <p>Asegúrate de que estás logueado y que el usuario existe en la tabla `Usuarios`.</p>
+        <p style="color:red;">Error de BD: <?= htmlspecialchars($stmt->error, ENT_QUOTES, 'UTF-8'); ?></p> 
+        <p><a href="crear_anuncio.php">Volver al formulario de creación</a></p>
+    </main>
+    <?php
+}
 
-$idNuevo = $conn->insert_id;
+$stmt->close();
+$conn->close();
 
+require 'footer.php'; 
 ?>
-<main class="container">
-    <h1>Anuncio creado correctamente</h1>
-    <p><a href="anadir_foto.php?id=<?= $idNuevo ?>">Añadir foto al anuncio</a></p>
-</main>
-<?php require 'footer.php'; ?>

@@ -2,7 +2,7 @@
 require 'header.php';
 require 'conexion.php';
 
-$usuario = 1; // Cambiar cuando tengas login REAL
+$usuario = $_SESSION['id_usuario'] ?? 1; // Usar el ID de la sesión
 $mensaje_error = "";
 
 // Id de anuncio preseleccionado (si vienes desde respuesta_crear_anuncio.php)
@@ -69,9 +69,6 @@ if (isset($_GET['error']) && $_GET['error'] == 'faltan_datos') {
 
     <label>Archivo de imagen:</label>
     <input type="file" name="foto"><br>
-    <!-- Recuerda: según el enunciado, la imagen real se sube “a mano” al servidor.
-         Aquí por ahora solo vamos a guardar el nombre/ruta en la base de datos. -->
-
     <input type="submit" value="Añadir foto">
 </form>
 

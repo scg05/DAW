@@ -9,6 +9,13 @@ $fecha    = isset($_POST['fecha_nacimiento']) ? $_POST['fecha_nacimiento'] : '';
 $ciudad   = isset($_POST['ciudad']) ? trim($_POST['ciudad']) : '';
 $pais     = isset($_POST['pais']) ? $_POST['pais'] : '';
 
+// Guardamos solo el nombre del fichero de la foto si se subió (el enunciado lo pide así por ahora)
+$nombreFichero = '';
+if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+    $nombreFichero = basename($_FILES['foto']['name']);
+}
+
+
 $errores = [];
 
 /* 1. VALIDACIÓN NOMBRE DE USUARIO
@@ -80,10 +87,10 @@ if ($email === '') {
             list($local, $domain) = $partes;
 
             // longitudes
-            if (strlen($local) < 1 || strlen($local) > 64) {
+            if (strlen($local) < 1 || strlen(utf8_decode($local)) > 64) {
                 $errores[] = "La parte local del correo debe tener entre 1 y 64 caracteres.";
             }
-            if (strlen($domain) < 1 || strlen($domain) > 255) {
+            if (strlen($domain) < 1 || strlen(utf8_decode($domain)) > 255) {
                 $errores[] = "El dominio del correo debe tener entre 1 y 255 caracteres.";
             }
 
@@ -104,7 +111,7 @@ if ($email === '') {
                     $errores[] = "El dominio del correo no puede contener puntos consecutivos.";
                     break;
                 }
-                if (strlen($label) > 63) {
+                if (strlen(utf8_decode($label)) > 63) {
                     $errores[] = "Cada subdominio del dominio no puede tener más de 63 caracteres.";
                     break;
                 }
@@ -152,18 +159,15 @@ if ($fecha === '') {
     }
 }
 
-
-// El resto de campos (ciudad, país, foto) pueden quedar vacíos según el enunciado.
-// NO gestionamos todavía el almacenamiento de la foto.
-
 /* A partir de aquí mostramos resultado:
    - Si hay errores: los listamos
-   - Si no hay errores: mensaje de registro correcto
+   - Si no hay errores: realizamos la inserción en BD
 */
 $pageStyles = ["css/enviarmensaje.css"];
 require 'header.php';
 
 if (!empty($errores)): ?>
+    <main class="container">
     <h1>Errores en el registro</h1>
     <ul>
         <?php foreach ($errores as $e): ?>
@@ -171,13 +175,77 @@ if (!empty($errores)): ?>
         <?php endforeach; ?>
     </ul>
     <p><a href="registro.php">Volver al formulario de registro</a></p>
+    </main>
 
-<?php else: ?>
+<?php else: 
 
-    <h1>Registro correcto</h1>
-    <p><strong>Usuario:</strong> <?php echo htmlspecialchars($usuario, ENT_QUOTES, 'UTF-8'); ?></p>
-    <p>Tu cuenta ha sido creada correctamente.</p>
+    // ******************* INICIO DE LA LÓGICA DE INSERCIÓN EN BD *******************
+    require 'conexion.php'; 
 
-<?php endif; ?>
+    // Mapeo de variables para la base de datos (según bdp9.sql: 1=M, 2=F, 3=O)
+    $sexoInt = ($sexo === 'M') ? 1 : (($sexo === 'F') ? 2 : 3);
+    $paisInt = (empty($pais) || $pais === '') ? NULL : (int)$pais; 
+    
+    // Preparar la consulta de inserción con sentencias preparadas
+    $sql = "INSERT INTO Usuarios 
+            (NomUsuario, Clave, Email, Sexo, FNacimiento, Ciudad, Pais, Foto, FRegistro, Estilo) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), 1)"; 
+
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        // En caso de error en la preparación de la consulta
+        ?>
+        <main class="container">
+            <h1>Error de Sistema</h1>
+            <p>Error en la preparación de la consulta: <?= htmlspecialchars($conn->error, ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><a href="registro.php">Volver al formulario de registro</a></p>
+        </main>
+        <?php
+        require 'footer.php';
+        exit;
+    }
+
+    // CORRECCIÓN CLAVE: El string de tipos para bind_param debe ser "sssisiss"
+    // Variables: NomUsuario(s), Clave(s), Email(s), Sexo(i), FNacimiento(s), Ciudad(s), Pais(i), Foto(s)
+    $stmt->bind_param(
+        "sssisiss",
+        $usuario,
+        $password,
+        $email,
+        $sexoInt,
+        $fecha,
+        $ciudad,
+        $paisInt,
+        $nombreFichero 
+    );
+
+    if ($stmt->execute()) {
+        ?>
+        <main class="container">
+            <h1>Registro correcto</h1>
+            <p><strong>Usuario:</strong> <?php echo htmlspecialchars($usuario, ENT_QUOTES, 'UTF-8'); ?></p>
+            <p>Tu cuenta ha sido creada correctamente en la base de datos.</p>
+            <p><a href="index.php">Ir a la página principal (iniciar sesión)</a></p>
+        </main>
+        <?php
+    } else {
+        // En caso de error en la ejecución (ej. nombre de usuario duplicado, clave ajena, etc.)
+        ?>
+        <main class="container">
+            <h1>Error al registrar usuario</h1>
+            <p>Ha ocurrido un error al intentar registrar el usuario. Es posible que el nombre de usuario ya esté en uso (UNIQUE INDEX).</p>
+            <p style="color:red;">Error de BD: <?= htmlspecialchars($stmt->error, ENT_QUOTES, 'UTF-8'); ?></p> 
+            <p><a href="registro.php">Volver al formulario de registro</a></p>
+        </main>
+        <?php
+    }
+    
+    $stmt->close();
+    $conn->close();
+
+    // ******************* FIN DE LA LÓGICA DE INSERCIÓN EN BD *******************
+
+endif; ?>
 
 <?php require 'footer.php'; ?>

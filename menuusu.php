@@ -35,6 +35,7 @@ if(!isset($_SESSION['usuario'])){
             <li><a href="crear_anuncio.php">Crear un anuncio nuevo</a></li>
             <li><a href="mis_mensajes.php">Mis mensajes</a></li>
             <li><a href="solicitar_folleto.php">Solicitar folleto publicitario</a></li>
+            <li><a href="darme_de_baja.php">Darse de baja</a></li>
             <li><a href="index.php">Salir</a></li>
         </ul>
     </main>

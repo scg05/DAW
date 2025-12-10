@@ -1,70 +1,96 @@
-<?php require 'header.php'; ?>
+<?php
+$pageStyles = ["css/solicitarfolleto.css"];
+require 'header.php';
+require 'conexion.php';
+
+// Si no llega por POST, salir
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    echo "<p class='error'>Acceso no válido.</p>";
+    require 'footer.php';
+    exit;
+}
+
+$anuncio     = $_POST["anuncio"] ?? null;
+$texto       = trim($_POST["texto"] ?? "");
+$nombre      = trim($_POST["nombre"] ?? "");
+$email       = trim($_POST["email"] ?? "");
+$direccion   = trim($_POST["direccion"] ?? "");
+$telefono    = trim($_POST["telefono"] ?? "");
+
+$color       = trim($_POST["color"] ?? "");
+$copias      = intval($_POST["copias"] ?? 1);
+$resolucion  = intval($_POST["resolucion"] ?? 300);
+$ifecha      = $_POST["fecha"] ?? date("Y-m-d");
+
+$icolor      = isset($_POST["icolor"]) ? 1 : 0;
+$iprecio     = isset($_POST["iprecio"]) ? 1 : 0;
+
+// Validación básica
+$errores = [];
+
+if (!$anuncio || !ctype_digit($anuncio)) $errores[] = "ID de anuncio inválido.";
+if ($nombre === "") $errores[] = "Debe indicar un nombre.";
+if ($email === "") $errores[] = "Debe indicar un email.";
+if ($direccion === "") $errores[] = "Debe indicar una dirección.";
+
+if (!empty($errores)) {
+    echo "<h1>❌ Error al enviar solicitud</h1><ul>";
+    foreach ($errores as $e) echo "<li>" . htmlspecialchars($e) . "</li>";
+    echo "</ul>";
+    require 'footer.php';
+    exit;
+}
+
+// Insertar en Solicitudes
+$sql = "INSERT INTO Solicitudes 
+        (Anuncio, Texto, Nombre, Email, Direccion, Telefono, Color, Copias, Resolucion, Fecha, IColor, IPrecio, FRegistro, Coste)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NULL)";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param(
+    "issssssiiiii",
+    $anuncio,
+    $texto,
+    $nombre,
+    $email,
+    $direccion,
+    $telefono,
+    $color,
+    $copias,
+    $resolucion,
+    $ifecha,
+    $icolor,
+    $iprecio
+);
+$stmt->execute();
+
+// Obtener ID insertado
+$idSolicitud = $stmt->insert_id;
+
+?>
 
 <main class="container">
-    <h2>Solicitud registrada correctamente</h2>
+    <h1> Solicitud enviada correctamente</h1>
 
-    <?php
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    <p>Su solicitud de folleto ha sido almacenada correctamente.</p>
 
-        // Recogida de datos del formulario
-        $paginas = intval($_POST["paginas"]);
-        $fotos = intval($_POST["fotos"]);
-        $copias = intval($_POST["copias"] ?? 1);
-        $resolucion = intval($_POST["resolucion"] ?? 150);
-        $impresion = $_POST["color_impresion"] ?? "blanco_negro";
+    <h2>Datos enviados</h2>
+    <ul>
+        <li><strong>ID solicitud:</strong> <?= $idSolicitud ?></li>
+        <li><strong>Anuncio:</strong> <?= htmlspecialchars($anuncio) ?></li>
+        <li><strong>Nombre:</strong> <?= htmlspecialchars($nombre) ?></li>
+        <li><strong>Email:</strong> <?= htmlspecialchars($email) ?></li>
+        <li><strong>Dirección:</strong> <?= htmlspecialchars($direccion) ?></li>
+        <li><strong>Teléfono:</strong> <?= htmlspecialchars($telefono) ?></li>
+        <li><strong>Color:</strong> <?= htmlspecialchars($color) ?></li>
+        <li><strong>Copias:</strong> <?= htmlspecialchars($copias) ?></li>
+        <li><strong>Resolución:</strong> <?= htmlspecialchars($resolucion) ?> dpi</li>
+        <li><strong>Fecha deseada:</strong> <?= htmlspecialchars($ifecha) ?></li>
+        <li><strong>Impresión a color:</strong> <?= $icolor ? "Sí" : "No" ?></li>
+        <li><strong>Incluir precio:</strong> <?= $iprecio ? "Sí" : "No" ?></li>
+        <li><strong>Mensaje adicional:</strong> <?= nl2br(htmlspecialchars($texto)) ?></li>
+    </ul>
 
-        //Tabla de precios
-        $precios_base = [
-            "bn_150" => 12.00,
-            "bn_450" => 12.60,
-            "col_150" => 13.50,
-            "col_450" => 14.10
-        ];
-        
-        $incrementos = [
-            "bn_150" => 2.00,
-            "bn_450" => 2.60,
-            "col_150" => 3.50,
-            "col_450" => 4.10
-        ];
-
-        //Selección del tipo de impresión + resolución
-        if ($impresion == "blanco_negro") {
-            $key = ($resolucion <= 300) ? "bn_150" : "bn_450";
-        } else {
-            $key = ($resolucion <= 300) ? "col_150" : "col_450";
-        }
-
-        //Precio unitario
-        $precio_unitario = $precios_base[$key] + ($paginas - 1) * $incrementos[$key];
-
-        //Coste final
-        $coste_fijo = 5;
-        $coste_total = ($precio_unitario * $copias) + $coste_fijo;
-
-        echo "
-        <p><strong>Folleto solicitado:</strong></p>
-        <ul>
-            <li>Número de páginas: $paginas</li>
-            <li>Número de fotos: $fotos</li>
-            <li>Tipo impresión: ".(($impresion=="blanco_negro") ? "Blanco y negro" : "A color")."</li>
-            <li>Resolución: $resolucion DPI</li>
-            <li>Copias: $copias</li>
-        </ul>
-
-        <h3>Coste del folleto</h3>
-        <ul>
-            <li>Precio unitario: ".number_format($precio_unitario,2,',','.')." €</li>
-            <li>Coste fijo: ".number_format($coste_fijo,2,',','.')." €</li>
-            <li><strong>Total final:</strong> ".number_format($coste_total,2,',','.')." €</li>
-        </ul>
-        ";
-    } else {
-        echo "<p class='error'> Error: Acceso no permitido</p>";
-    }
-    ?>
-
-    <p><a href="index.php">Volver al inicio</a></p>
 </main>
 
 <?php require 'footer.php'; ?>

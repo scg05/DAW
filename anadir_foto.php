@@ -1,52 +1,75 @@
 <?php
-    $titulo = isset($_GET['titulo']) ? $_GET['titulo'] : "";
-    $mensaje_error = "";
+require 'header.php';
+require 'conexion.php';
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $titulo_foto = trim($_POST['titulo_foto']);
-        $alt = trim($_POST['alt']);
-        $anuncio = trim($_POST['anuncio']);
+$usuario = $_SESSION['id_usuario'] ?? 1; // Usar el ID de la sesión
+$mensaje_error = "";
 
-        if ($titulo_foto == "" || strlen($alt) < 10) {
-            $mensaje_error = "Datos de la foto incompletos o texto alternativo muy corto.";
-        } else {
-            echo "<p>Foto añadida correctamente al anuncio '$anuncio'.</p>";
-            header("Location: mis_anuncios.php");
-            exit;
-        }
-    }
+// Id de anuncio preseleccionado (si vienes desde respuesta_crear_anuncio.php)
+$idSeleccionado = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// Cargar anuncios del usuario
+$anuncios = [];
+$sqlA = "SELECT IdAnuncio, Titulo FROM Anuncios WHERE Usuario = ? ORDER BY FRegistro DESC";
+$stmtA = $conn->prepare($sqlA);
+$stmtA->bind_param("i", $usuario);
+$stmtA->execute();
+$resA = $stmtA->get_result();
+while ($fila = $resA->fetch_assoc()) {
+    $anuncios[] = $fila;
+}
+$stmtA->close();
+$conn->close();
+
+// Mensaje por GET si vienes de respuesta_anadir_foto con error simple
+if (isset($_GET['error']) && $_GET['error'] == 'faltan_datos') {
+    $mensaje_error = "Debes completar los datos obligatorios de la foto.";
+}
 ?>
-<?php require 'header.php'; ?>
-    
-    <h1>Añadir foto a anuncio</h1>
-    <?php
-    if ($mensaje_error != "") {
-        echo "<p style='color:red'>" . $mensaje_error . "</p>";
-    }
-    ?>
 
-    <form action="" method="post" enctype="multipart/form-data" novalidate>
-        <label>Título de la foto:</label>
-        <input type="text" name="titulo_foto"><br>
+<h1>Añadir foto a anuncio</h1>
 
-        <label>Texto alternativo (mínimo 10 caracteres):</label>
-        <input type="text" name="alt"><br>
+<?php if ($mensaje_error != ""): ?>
+    <p style="color:red;"><?= $mensaje_error ?></p>
+<?php endif; ?>
 
-        <label>Selecciona anuncio:</label>
-        <select name="anuncio" <?php echo $titulo != "" ? "disabled" : "" ?>>
-            <?php if ($titulo != "") {
-                echo "<option selected>" . $titulo . "</option>";
-            } else {
-                echo "<option value=''>-- Selecciona anuncio --</option>";
-                echo "<option>Apartamento en el centro</option>";
-                echo "<option>Chalet con jardín</option>";
-            } ?>
-        </select><br>
+<form action="respuesta_anadir_foto.php" method="post" enctype="multipart/form-data" novalidate>
+    <label>Título de la foto:</label>
+    <input type="text" name="titulo_foto"><br>
 
-        <label>Archivo de imagen:</label>
-        <input type="file" name="foto"><br>
+    <label>Texto alternativo (mínimo 10 caracteres):</label>
+    <input type="text" name="alt"><br>
 
-        <input type="submit" value="Añadir foto">
-    </form>
+    <label>Anuncio:</label><br>
+
+    <?php if ($idSeleccionado > 0): ?>
+        <?php
+        // Buscar el título del anuncio seleccionado para mostrarlo
+        $tituloSel = "";
+        foreach ($anuncios as $a) {
+            if ($a['IdAnuncio'] == $idSeleccionado) {
+                $tituloSel = $a['Titulo'];
+                break;
+            }
+        }
+        ?>
+        <p><strong><?= htmlspecialchars($tituloSel, ENT_QUOTES, 'UTF-8'); ?></strong></p>
+        <input type="hidden" name="anuncio" value="<?= $idSeleccionado; ?>">
+    <?php else: ?>
+        <select name="anuncio">
+            <option value="">-- Selecciona anuncio --</option>
+            <?php foreach ($anuncios as $a): ?>
+                <option value="<?= $a['IdAnuncio']; ?>">
+                    <?= htmlspecialchars($a['Titulo'], ENT_QUOTES, 'UTF-8'); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    <?php endif; ?>
+    <br>
+
+    <label>Archivo de imagen:</label>
+    <input type="file" name="foto"><br>
+    <input type="submit" value="Añadir foto">
+</form>
 
 <?php require 'footer.php'; ?>

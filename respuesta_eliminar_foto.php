@@ -2,6 +2,9 @@
 require 'header.php';
 require 'conexion.php';
 
+// Directorio donde se guardan las fotos de anuncios 
+$DIR_FOTOS_ANUNCIOS = "uploads/anuncios/";
+
 // Comprobar sesión
 if (!isset($_SESSION['usuario'])) {
     header("Location: index.php?error=acceso_denegado");
@@ -70,7 +73,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($confirmar === 'si') {
-        // Borrar la foto de la base de datos
+
+        //ELIMINAR ARCHIVO FISICO DEL SERVIDOR
+        $nombreFichero = $foto['Foto'];
+        $rutaFisica = $DIR_FOTOS_ANUNCIOS . $nombreFichero;
+
+        // Intentamos borrar el archivo con @unlink para evitar que el script falle
+        // si el archivo ya no existe o hay un problema de permisos.
+        if (!empty($nombreFichero) && file_exists($rutaFisica)) {
+            @unlink($rutaFisica);
+        }
+
+        // BORRAR REGISTRO DE LA BASE DE DATOS
         $sqlDel = "DELETE FROM Fotos WHERE IdFoto = ?";
 
         $stmtDel = $conn->prepare($sqlDel);
@@ -102,9 +116,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p><strong><?= htmlspecialchars($foto['Titulo'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
     <p>Del anuncio: <strong><?= htmlspecialchars($foto['TituloAnuncio'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
 
-    <?php if (!empty($foto['Foto'])): ?>
+    <?php if (!empty($foto['Foto'])): 
+        // Usamos la ruta completa para mostrar la miniatura en la confirmación
+        $rutaMiniatura = $DIR_FOTOS_ANUNCIOS . htmlspecialchars($foto['Foto'], ENT_QUOTES, 'UTF-8');
+        ?>
         <p>
-            <img src="<?= htmlspecialchars($foto['Foto'], ENT_QUOTES, 'UTF-8'); ?>" 
+            <img src="<?= $rutaMiniatura; ?>" 
                  alt="<?= htmlspecialchars($foto['Titulo'], ENT_QUOTES, 'UTF-8'); ?>" 
                  width="200">
         </p>

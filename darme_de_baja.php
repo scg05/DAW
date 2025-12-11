@@ -13,12 +13,13 @@ if (!isset($_SESSION['usuario'])) {
 $nomUsuario = $_SESSION['usuario'];
 
 // Obtener datos del usuario
-$sql = "SELECT IdUsuario, Clave FROM Usuarios WHERE NomUsuario = ?";
+$sql = "SELECT IdUsuario, Clave, Foto FROM Usuarios WHERE NomUsuario = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $nomUsuario);
 $stmt->execute();
 $res = $stmt->get_result();
 $usuario = $res->fetch_assoc();
+$stmt->close();
 
 if (!$usuario) {
     echo "<p class='error'>No se pudo obtener la información del usuario.</p>";
@@ -29,59 +30,12 @@ if (!$usuario) {
 $idUsuario = $usuario['IdUsuario'];
 $claveReal = $usuario['Clave'];
 
-// 2. Si se ha enviado la confirmación
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["confirmar"])) {
-
-    $claveIntroducida = $_POST["clave"] ?? "";
-
-    if ($claveIntroducida !== $claveReal) {
-        echo "<p class='error'>La contraseña introducida no es correcta.</p>";
-    } else {
-
-        //Borrar fotos asociadas a sus anuncios
-        $conn->query("
-            DELETE Fotos FROM Fotos 
-            INNER JOIN Anuncios ON Fotos.Anuncio = Anuncios.IdAnuncio
-            WHERE Anuncios.Usuario = $idUsuario
-        ");
-
-        //Borrar anuncios del usuario
-        $conn->query("DELETE FROM Anuncios WHERE Usuario = $idUsuario");
-
-        //Borrar mensajes donde participa
-        $conn->query("DELETE FROM Mensajes WHERE UsuOrigen = $idUsuario OR UsuDestino = $idUsuario");
-        $conn->query("DELETE FROM Mensajes WHERE UsuOrigen = $idUsuario OR UsuDestino = $idUsuario");
-
-        // 2.4 Borrar solicitudes asociadas a sus anuncios borrados
-        $conn->query("
-            DELETE Solicitudes FROM Solicitudes
-            WHERE Anuncio IS NULL OR Anuncio IN (SELECT IdAnuncio FROM Anuncios WHERE Usuario = $idUsuario)
-        ");
-        //Borrar usuario
-        $stmtDel = $conn->prepare("DELETE FROM Usuarios WHERE IdUsuario = ?");
-        $stmtDel->bind_param("i", $idUsuario);
-        $stmtDel->execute();
-
-        session_destroy();
-
-        echo "<main class='container'><h1>Cuenta eliminada</h1>
-              <p>Tu cuenta y todos tus datos han sido eliminados correctamente.</p>
-              <a href='index.php'>Volver a la página principal</a></main>";
-
-        require 'footer.php';
-        exit;
-    }
-}
-
-// 3. Obtener resumen de información para mostrar
-
-// Obtener anuncios del usuario
+// 2. Obtener resumen de información para mostrar
 $sqlAnuncios = "
-    SELECT A.IdAnuncio, A.Titulo, COUNT(F.IdFoto) AS NumFotos
+    SELECT A.IdAnuncio, A.Titulo, 
+           (SELECT COUNT(F.IdFoto) FROM Fotos F WHERE F.Anuncio = A.IdAnuncio) AS NumFotos
     FROM Anuncios A
-    LEFT JOIN Fotos F ON A.IdAnuncio = F.Anuncio
     WHERE A.Usuario = ?
-    GROUP BY A.IdAnuncio
 ";
 $stmtA = $conn->prepare($sqlAnuncios);
 $stmtA->bind_param("i", $idUsuario);
@@ -98,6 +52,12 @@ while ($row = $resAnuncios->fetch_assoc()) {
 
 $totalAnuncios = count($anuncios);
 
+// Sumar 1 foto si tienen foto de perfil
+if (!empty($fotoPerfilDB)) {
+    $totalFotos += 1;
+}
+
+$conn->close(); // Cerrar la conexión después de obtener todos los datos de resumen
 ?>
 
 <main class="container">
@@ -127,12 +87,14 @@ $totalAnuncios = count($anuncios);
     <h2>Confirmación</h2>
     <p>Para confirmar la eliminación de tu cuenta, introduce tu contraseña actual:</p>
 
-    <form action="darme_de_baja.php" method="post">
+    <form action="respuesta_darme_de_baja.php" method="post">
         <label for="clave">Contraseña:</label>
         <input type="password" name="clave" id="clave" required>
 
+        <input type="hidden" name="id_usuario" value="<?= $idUsuario ?>">
+        <input type="hidden" name="nombre_usuario" value="<?= htmlspecialchars($nomUsuario) ?>">
         <input type="hidden" name="confirmar" value="1">
-
+        
         <button type="submit" style="background:red;color:white;">Eliminar mi cuenta</button>
     </form>
 

@@ -2,6 +2,9 @@
 require 'header.php';
 require 'conexion.php';
 
+// Directorio donde se guardan las fotos de anuncios 
+$DIR_FOTOS_ANUNCIOS = "uploads/anuncios/";
+
 // Comprobar sesión
 if (!isset($_SESSION['usuario'])) {
     header("Location: index.php?error=acceso_denegado");
@@ -42,7 +45,8 @@ if ($idAnuncio <= 0) {
 }
 
 // Comprobar que el anuncio pertenece al usuario logueado
-$sql = "SELECT IdAnuncio, Titulo FROM Anuncios WHERE IdAnuncio = ? AND Usuario = ?";
+//Incluir FPrincipal en la consulta
+$sql = "SELECT IdAnuncio, Titulo, FPrincipal FROM Anuncios WHERE IdAnuncio = ? AND Usuario = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $idAnuncio, $idUsuario);
 $stmt->execute();
@@ -56,6 +60,19 @@ if (!$anuncio) {
     exit;
 }
 
+// Obtener nombres de las fotos adicionales antes de la eliminación
+$fotosAdicionales = [];
+$sql_fotos = "SELECT Foto FROM Fotos WHERE Anuncio=?";
+$stmt_f = $conn->prepare($sql_fotos);
+$stmt_f->bind_param("i", $idAnuncio);
+$stmt_f->execute();
+$result_fotos = $stmt_f->get_result();
+while($row = $result_fotos->fetch_assoc()){
+    // Almacenar solo el nombre del archivo
+    $fotosAdicionales[] = $row['Foto'];
+}
+$stmt_f->close();
+
 // Si se ha enviado el formulario de confirmación
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -66,14 +83,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($confirmar === 'si') {
-        // Borrado: anuncio + datos asociados (por ahora, fotos)
-        // Si tienes más tablas relacionadas (mensajes, etc.), aquí las borras también
 
         // Empezar transacción por seguridad
         $conn->begin_transaction();
 
         try {
-            // Borrar fotos asociadas al anuncio
+            //ELIMINAR ARCHIVOS FISICOS DEL SERVIDOR
+            
+            //Eliminar foto principal (si existe y no es el placeholder)
+            $fPrincipal = $anuncio['FPrincipal'];
+            // Asumimos que los nombres guardados en Anuncios son rutas relativas a la carpeta 
+            if (!empty($fPrincipal) && $fPrincipal !== 'img/sin_foto.jpg') {
+                // Si la FPrincipal fue una de las fotos subidas, puede estar en uploads/anuncios/
+                $rutaFisicaPrincipal = $DIR_FOTOS_ANUNCIOS . $fPrincipal;
+                @unlink($rutaFisicaPrincipal);
+            }
+
+            // Eliminar fotos adicionales
+            foreach ($fotosAdicionales as $foto) {
+                $rutaFisicaAdicional = $DIR_FOTOS_ANUNCIOS . $foto;
+                // Usamos @unlink para evitar que el script se detenga si el archivo no existe o hay error de permisos
+                @unlink($rutaFisicaAdicional);
+            }
+
+            //ELIMINAR REGISTROS DE LA BASE DE DATOS
+
+            // Borrar fotos asociadas al anuncio (de la tabla Fotos)
             $sqlFotos = "DELETE FROM Fotos WHERE Anuncio = ?";
             $stmtF = $conn->prepare($sqlFotos);
             $stmtF->bind_param("i", $idAnuncio);

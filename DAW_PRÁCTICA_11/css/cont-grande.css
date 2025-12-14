@@ -1,0 +1,212 @@
+
+:root {
+  --color-fondo: #000000;       /* fondo negro */
+  --color-principal: #FFD700;   /* amarillo dorado */
+  --color-secundario: #222222;  /* gris muy oscuro */
+}
+
+/* REGLAS GENERALES */
+body {
+  background-color: var(--color-fondo);
+  color: var(--color-principal);
+  font-family: "Montserrat", sans-serif;
+  font-size: 1.4em;  /* texto más grande */
+  line-height: 1.8;
+  margin: 0;
+  padding: 0;
+}
+
+/* HEADER */
+header {
+  background-color: var(--color-secundario);
+  color: var(--color-principal);
+  text-align: center;
+  padding: 25px;
+}
+
+header .titulo-faculty {
+  font-family: "Faculty Glyphic", sans-serif;
+  font-size: 2.8em;
+  color: var(--color-principal);
+}
+
+/* NAV */
+.nav-lista li {
+  display: inline-block;
+  margin: 0 15px;
+}
+
+.nav-lista li a {
+  color: var(--color-fondo);
+  background-color: var(--color-principal);
+  border: 2px solid var(--color-principal);
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 1.2em;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-lista li a:hover {
+  background-color: var(--color-fondo);
+  color: var(--color-principal);
+}
+
+.nav-toggle {
+  background: none;
+  border: 2px solid var(--color-principal);
+  color: var(--color-principal);
+  font-size: 1.6em;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+/* MAIN */
+main {
+  background-color: var(--color-secundario);
+  color: var(--color-principal);
+  margin: 40px auto;
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 1000px;
+  text-align: center;
+}
+
+/* TÍTULOS */
+h1, h2, h3 {
+  color: var(--color-principal);
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+h1 { font-size: 2.4em; }
+h2 { font-size: 1.8em; }
+h3 { font-size: 1.5em; }
+
+/* PÁRRAFOS */
+p {
+  font-size: 1.3em;
+  margin-bottom: 20px;
+}
+
+/* FORMULARIOS */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+label {
+  font-weight: 600;
+  font-size: 1.2em;
+  color: var(--color-principal);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.2em;
+  border: 2px solid var(--color-principal);
+  border-radius: 8px;
+  background-color: var(--color-fondo);
+  color: var(--color-principal);
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: #bfbfbf;
+}
+
+/* BOTONES */
+button,
+input[type="submit"],
+input[type="button"] {
+  background-color: var(--color-principal);
+  color: var(--color-fondo);
+  border: none;
+  padding: 15px 25px;
+  border-radius: 8px;
+  font-size: 1.2em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  background-color: var(--color-secundario);
+  color: var(--color-principal);
+  transform: translateY(-2px);
+}
+
+/* TABLAS */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.1em;
+  background-color: var(--color-fondo);
+  color: var(--color-principal);
+}
+
+thead {
+  background-color: var(--color-principal);
+  color: var(--color-fondo);
+  font-size: 1.2em;
+}
+
+th, td {
+  text-align: left;
+  padding: 15px;
+  border-bottom: 1px solid var(--color-principal);
+}
+
+tbody tr:hover {
+  background-color: var(--color-principal);
+  color: var(--color-fondo);
+}
+
+/* ENLACES */
+a {
+  color: var(--color-principal);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+a:hover {
+  color: #fff5c0;
+}
+
+/* FOOTER */
+footer {
+  background-color: var(--color-secundario);
+  color: var(--color-principal);
+  padding: 20px;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  body { font-size: 1.2em; }
+
+  main {
+    padding: 25px;
+  }
+
+  .nav-lista li {
+    display: block;
+    margin: 10px 0;
+  }
+
+  button,
+  input[type="submit"],
+  input[type="button"] {
+    width: 100%;
+  }
+}

@@ -1,0 +1,95 @@
+/* oscuro.css — Modo oscuro */
+:root {
+  color-scheme: dark;
+  --color-fondo: #121212;
+  --color-texto: #e0e0e0;
+  --color-acento: #3fa9f5;
+}
+
+html, body {
+  background-color: var(--color-fondo) !important;
+  color: var(--color-texto) !important;
+}
+
+/* Header y footer */
+header, footer {
+  background-color: var(--color-fondo) !important;
+  color: var(--color-texto) !important;
+  border-top: 1px solid var(--color-acento) !important;
+  border-bottom: 1px solid var(--color-acento) !important;
+}
+
+/* Secciones principales */
+main section {
+  background-color: var(--color-fondo) !important;
+  color: var(--color-texto) !important;
+  border: 1px solid var(--color-acento) !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 8px;
+}
+
+/* Formularios */
+input, select, textarea {
+  background-color: var(--color-fondo) !important;
+  color: var(--color-texto) !important;
+  border: 1px solid var(--color-acento) !important;
+}
+
+input[type="submit"], button {
+  background-color: var(--color-acento) !important;
+  color: var(--color-fondo) !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover, button:hover {
+  opacity: 0.8;
+}
+
+/* Enlaces */
+a {
+  color: var(--color-acento) !important;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  background-color: var(--color-acento);
+}
+
+
+main form {
+  background-color: var(--color-acento);
+}
+
+main.container {
+ background-color: var(--color-acento);
+  
+}
+
+main.container2 form {
+ background-color: var(--color-fondo);
+}
+
+.nav-lista li a {
+  color: var(--color-fondo);
+  background-color: var(--color-texto);
+  border: 1px solid var(--color-fondo);
+  padding: 5px 10px;
+  text-decoration: none;
+}
+
+main ul li a {
+  background-color: var(--color-texto);
+  color: var(--color-fondo);
+}
+
+main h1 {
+  color: var(--color-texto);
+}
+
+main p {
+  color: var(--color-texto);
+}

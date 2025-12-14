@@ -1,0 +1,58 @@
+:root { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+/* Header y footer normales */
+header, footer {
+  text-align: center;
+  padding: 10px;
+}
+
+/* Centrado horizontal del contenido principal */
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* centra horizontalmente */
+  text-align: center;
+  gap: 20px;             /* espacio entre cuadros */
+  margin: 20px 0;
+}
+
+main form {
+  background-color: var(--color-secundario);
+  border-radius: 12px;
+  padding: 20px 30px;
+  width: 80%;
+  max-width: 600px;
+}
+
+input {
+  align-self: center;
+  background-color: var(--color-principal);
+  color: var(--color-fondo);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  main form {
+    padding: 15px 20px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 15px;
+  }
+}

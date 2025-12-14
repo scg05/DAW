@@ -26,7 +26,9 @@ $stmt->execute();
 $stmt->bind_result($dbId, $dbClave);
 
 if ($stmt->fetch()) {
-    if ($dbClave === $contrasena) {
+
+    // Compara la contraseña en texto plano ($contrasena) con el hash ($dbClave)
+    if (password_verify($contrasena, $dbClave)) {
         $permitido = true;
         $idUsuario = $dbId;
     }
@@ -40,8 +42,9 @@ if ($permitido) {
     $_SESSION['id_usuario'] = $idUsuario;
 
     if (isset($_POST['recordarme']) && $_POST['recordarme'] == 'si') {
+        $hash_para_cookie = password_hash($contrasena, PASSWORD_DEFAULT);
         setcookie('recordar_usuario', $usuario, time() + (90 * 24 * 60 * 60));
-        setcookie('recordar_password', $contrasena, time() + (90 * 24 * 60 * 60));
+        setcookie('recordar_password', $hash_para_cookie, time() + (90 * 24 * 60 * 60));
         setcookie('ultima_visita', date("c"), time() + (90 * 24 * 60 * 60));
     }
 

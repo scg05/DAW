@@ -51,12 +51,17 @@ if ($passActual === '') {
 } else {
     $stored = $user['Clave'];
     $passOk = false;
-    // Detectar si la contraseña almacenada parece ser un hash
-    if (is_string($stored) && preg_match('/^\$2y\$|^\$2a\$|^\$argon2/i', $stored)) {
-        if (password_verify($passActual, $stored)) $passOk = true;
+
+    // Si la clave almacenada es un hash-> password_verify.
+    if (is_string($stored) && (preg_match('/^\$2y\$|^\$2a\$|^\$argon2/i', $stored) || strlen($stored) > 20)) {
+        if (password_verify($passActual, $stored)) {
+            $passOk = true;
+        }
     } else {
-        // valor en claro
-        if ($passActual === $stored) $passOk = true;
+        // Fallback: Si no parece un hash, se compara directamente (solo para usuarios legacy/texto plano)
+        if ($passActual === $stored) {
+            $passOk = true;
+        }
     }
     if (!$passOk) $errores[] = "La contraseña actual no es correcta.";
 }
@@ -128,12 +133,7 @@ if (!empty($errores)) {
 }
 
 if ($nuevaPass !== '') {
-    $stored = $user['Clave'];
-    if (is_string($stored) && preg_match('/^\$2y\$|^\$2a\$|^\$argon2/i', $stored)) {
-        $nuevaClaveGuardar = password_hash($nuevaPass, PASSWORD_DEFAULT);
-    } else {
-        $nuevaClaveGuardar = $nuevaPass; //en texto claro
-    }
+    $nuevaClaveGuardar = password_hash($nuevaPass, PASSWORD_DEFAULT);
 } else {
     $nuevaClaveGuardar = $user['Clave'];
 }

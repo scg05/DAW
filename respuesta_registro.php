@@ -179,6 +179,9 @@ if (!empty($errores)): ?>
 
     require 'conexion.php'; 
 
+    //HASHEAR CONTRASEÑA
+    $clave_hasheada = password_hash($password, PASSWORD_DEFAULT);
+
     //SUBIR Y MOVER FICHERO
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         $nombreOriginal = $_FILES['foto']['name'];
@@ -215,7 +218,7 @@ if (!empty($errores)): ?>
     $stmt->bind_param(
         "sssisiss",
         $usuario,
-        $password,
+        $clave_hasheada,
         $email,
         $sexoInt,
         $fecha,

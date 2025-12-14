@@ -14,9 +14,9 @@
     $usuariorec = '';
 
     //COMPROBAR SI EXISTEN COOKIES DE RECORDAR USUARIO
-    if(isset($_COOKIE['usuario'])){
+    if(isset($_SESSION['usuario'])){
         $usuariorec=$_SESSION['usuario'];
-        
+        $visitaact = date("c");
         //MENSAJE BIENVENIDA ULTIMA VISITA
         if(isset($_COOKIE['ultima_visita'])){
             echo '<p class="mensaje">Bienvenido de nuevo, <strong>' . htmlspecialchars($usuariorec) . '</strong> ';
@@ -32,18 +32,40 @@
     } elseif(isset($_COOKIE['recordar_usuario']) && isset($_COOKIE['recordar_password'])){
 
         $usuariorec = $_COOKIE['recordar_usuario'];
-        $passwordrec = $_COOKIE['recordar_password'];
-        $_SESSION['usuario']=$usuariorec;
+        $hashCookie = $_COOKIE['recordar_password'];
+        require 'conexion.php'; 
+    
+        $sql = "SELECT IdUsuario, Clave FROM Usuarios WHERE NomUsuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $usuariorec);
+        $stmt->execute();
+        $stmt->bind_result($idUsuario, $dbClave);
 
-        if (isset($_COOKIE['ultima_visita'])) {
-            echo '<p class="mensaje">Bienvenido de nuevo, <strong>' . htmlspecialchars($usuariorec) . '</strong> ';
-            echo 'tu última visita fue el ' . date("d/m/Y H:i", strtotime($_COOKIE['ultima_visita'])) . '.</p>';
-        } else {
-            echo '<p class="mensaje">Bienvenido de nuevo, <strong>' . htmlspecialchars($usuariorec) . '</strong>.</p>';
+        if ($stmt->fetch()) {
+            $DB_HASH = $dbClave;
+
+            // Compara el hash de la cookie con el hash de la base de datos
+            // Ambos son hashes generados por password_hash().
+            if ($hashCookie === $DB_HASH) {
+                
+                // ACCESO PERMITIDO POR COOKIE
+                $_SESSION['usuario'] = $usuariorec;
+                $_SESSION['id_usuario'] = $idUsuario; 
+                
+                header("Location: index.php");
+                exit;
+                
+            } else {
+                // Falla la verificación del hash: cookie posiblemente corrupta o manipulada
+                // Destruimos las cookies inseguras y continuamos como si no hubiera sesión.
+                setcookie('recordar_usuario', '', time() - 3600);
+                setcookie('recordar_password', '', time() - 3600);
+                setcookie('ultima_visita', '', time() - 3600, "/");
+                // El flujo seguirá al bloque 'else' final.
+            }
         }
-        $visitaact = date("c");
-        setcookie('ultima_visita', $visitaact, (time() + (90*24*60*60))); //Caduca en 90 dias
-        echo '<p><a href="index.php?logout=1">Cerrar sesión</a></p>';
+        $stmt->close();
+        $conn->close();
     
     }else {
         

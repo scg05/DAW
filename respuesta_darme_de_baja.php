@@ -40,7 +40,7 @@ $claveActualDB = $userDB['Clave'];
 $fotoPerfilDB = $userDB['Foto'];
 
 // 4. Verificación de Seguridad: Contraseña actual
-if ($passwordConfirmacion !== $claveActualDB) {
+if (!password_verify($passwordConfirmacion, $claveActualDB)) {
     echo "<main class='container'><p class='error'>Contraseña de confirmación incorrecta. Vuelve a <a href='darme_de_baja.php'>la página de baja</a>.</p></main>";
     require 'footer.php';
     exit;
